@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Secure Payment</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    }
+    body {
+      background: #f5f7fa;
+      padding: 20px;
+      max-width: 500px;
+      margin: 0 auto;
+      text-align: center;
+    }
+    .verified {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: #e6fffa;
+      color: #0d9488;
+      padding: 8px 16px;
+      border-radius: 20px;
+      font-weight: bold;
+      margin: 20px 0;
+      border: 1px solid #a7f3d0;
+    }
+    .verified::before {
+      content: "✓";
+      font-size: 18px;
+    }
+    .timer {
+      font-size: 18px;
+      font-weight: bold;
+      color: #dc2626;
+      margin: 15px 0;
+      background: #fee2e2;
+      padding: 10px;
+      border-radius: 8px;
+    }
+    .qr-img {
+      width: 280px;
+      height: 280px;
+      object-fit: contain;
+      background: white;
+      padding: 10px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      margin: 20px 0;
+    }
+    .btns {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-top: 20px;
+    }
+    .btn {
+      padding: 14px;
+      font-weight: bold;
+      color: white;
+      text-decoration: none;
+      border-radius: 10px;
+      transition: transform 0.2s;
+    }
+    .btn:hover {
+      transform: scale(1.03);
+    }
+    .phonepe { background: linear-gradient(to right, #6e40c9, #5a32b5); }
+    .paytm { background: linear-gradient(to right, #33ccff, #0066ff); }
+    .upi { background: linear-gradient(to right, #00c853, #009688); }
+  </style>
+</head>
+<body>
+
+  <div class="verified">Verified User</div>
+
+  <div class="timer" id="countdown">⏳ Expires in: 10:00</div>
+
+  <img src="qr.jpg" class="qr-img" alt="Payment QR" />
+
+  <div class="btns">
+    <a href="upi://pay?pa=9971911424%40ybl&pn=Payment&am=100&cu=INR" class="btn phonepe">PhonePe</a>
+    <a href="upi://pay?pa=9971911424%40ybl&pn=Payment&am=100&cu=INR" class="btn paytm">Paytm</a>
+    <a href="upi://pay?pa=9971911424%40ybl&pn=Payment&am=100&cu=INR" class="btn upi">UPI</a>
+  </div>
+
+  <script>
+    // 10-minute countdown
+    let timeLeft = 10 * 60; // 600 seconds
+    const timerEl = document.getElementById('countdown');
+
+    const countdown = setInterval(() => {
+      if (timeLeft <= 0) {
+        clearInterval(countdown);
+        timerEl.textContent = "⏰ Payment link expired!";
+        timerEl.style.color = "#991b1b";
+        return;
+      }
+
+      const mins = Math.floor(timeLeft / 60).toString().padStart(2, '0');
+      const secs = (timeLeft % 60).toString().padStart(2, '0');
+      timerEl.textContent = `⏳ Expires in: ${mins}:${secs}`;
+      timeLeft--;
+    }, 1000);
+  </script>
+
+</body>
+</html>
